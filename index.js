@@ -34,7 +34,8 @@ createAndUpload = async (auth, filename) => {
   if (response.status < 299 && response.status > 199) {
     fs.unlink("./uploads/" + filename, () => {});
     // return `https://drive.google.com/file/d/${response.data.id}/view`;
-    return `https://drive.google.com/thumbnail?id=${response.data.id}`;
+    // return `https://drive.google.com/thumbnail?id=${response.data.id}`;
+    return `https://drive.google.com/uc?id=${response.data.id}`;
   }
   return "";
 };
