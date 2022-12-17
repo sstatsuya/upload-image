@@ -20,20 +20,16 @@ const createAndUpload = async (auth, filename) => {
     name: filename + ".png",
     parents: ["15olDSCIpfc4D5o7dJDsoX7WWxFqPV1Hc"],
   };
-  console.log("1");
   let media = {
     mimeType: "image/png",
-    body: fs.createReadStream("./uploads/" + filename),
+    body: fs.createReadStream(path.join(__dirname + "/uploads/" + filename)),
   };
-  console.log("2");
   let response = await driveService.files.create({
     resource: fileMetaData,
     media: media,
     fields: "id",
   });
-  console.log("3");
-  fs.unlink("./uploads/" + filename, () => {});
-  console.log("4");
+  fs.unlink(path.join(__dirname + "/uploads/" + filename), () => {});
   if (response.status < 299 && response.status > 199) {
     // return `https://drive.google.com/file/d/${response.data.id}/view`;
     // return `https://drive.google.com/thumbnail?id=${response.data.id}`;
