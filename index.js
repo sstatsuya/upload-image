@@ -20,6 +20,7 @@ const createAndUpload = async (auth, filename) => {
     name: filename + ".png",
     parents: ["15olDSCIpfc4D5o7dJDsoX7WWxFqPV1Hc"],
   };
+  return "breakpoint";
   let media = {
     mimeType: "image/png",
     body: fs.createReadStream(path.join(__dirname + "/uploads/" + filename)),
