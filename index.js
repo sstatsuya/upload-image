@@ -20,6 +20,7 @@ const createAndUpload = async (auth, filename) => {
     name: filename + ".png",
     parents: ["15olDSCIpfc4D5o7dJDsoX7WWxFqPV1Hc"],
   };
+  return "break";
   let media = {
     mimeType: "image/png",
     body: fs.createReadStream("./tmp/" + filename),
@@ -46,12 +47,13 @@ const path = require("path");
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use("/uploads", express.static("uploads"));
+// app.use("/uploads", express.static("uploads"));
 
 // handle storage using multer
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, path.resolve(process.cwd(), "/tmp"));
+    cb(null, path.join(process.cwd(), "/tmp"));
+    // cb(null, "./tmp");
   },
   filename: function (req, file, cb) {
     cb(null, file.fieldname + "-" + Date.now());
