@@ -9,11 +9,14 @@ const { google } = require("googleapis");
 const SCOPES = ["https://www.googleapis.com/auth/drive"];
 
 const createAndUpload = async (filename) => {
-  const KEYFILEPATH = path.resolve(
-    process.cwd(),
-    "./static/foodimages-354509-1701f68056c0.json"
+  // const KEYFILEPATH = path.resolve(
+  //   process.cwd(),
+  //   "./static/foodimages-354509-1701f68056c0.json"
+  // );
+
+  const KEYFILEPATH = path.join(
+    __dirname + "/static/foodimages-354509-1701f68056c0.json"
   );
-  console.log(KEYFILEPATH);
 
   // const KEYFILEPATH = "./static/foodimages-354509-1701f68056c0.json";
 
