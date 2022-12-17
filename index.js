@@ -41,6 +41,7 @@ const createAndUpload = async (auth, filename) => {
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const multer = require("multer");
+const path = require("path");
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -59,6 +60,21 @@ var storage = multer.diskStorage({
 
 var upload = multer({ storage: storage });
 
+const PORT = process.env.PORT || 3002;
+
+app.listen(PORT, () => {
+  // Cho app lắng nghe địa chỉ localhost (127.0.0.1) trên port 3002
+  console.log(`Example app listening on port http://localhost:${PORT}`);
+});
+
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname + "/assets/html/intro/index.html"));
+});
+
+app.use((req, res) => {
+  res.sendFile(path.join(__dirname + "/assets/html/error/index.html"));
+});
+
 // handle single file upload
 app.post(
   "/food-recipe-upload-file",
@@ -74,18 +90,3 @@ app.post(
     return res.json({ success: true, id: uploadRes });
   }
 );
-
-const PORT = process.env.PORT || 3002;
-
-app.listen(PORT, () => {
-  // Cho app lắng nghe địa chỉ localhost (127.0.0.1) trên port 3002
-  console.log(`Example app listening on port http://localhost:${PORT}`);
-});
-
-app.get("/", (req, res) => {
-  res.sendFile("assets/html/intro/index.html", { root: __dirname });
-});
-
-app.use((req, res) => {
-  res.sendFile("assets/html/error/index.html", { root: __dirname });
-});
