@@ -8,7 +8,7 @@ const { google } = require("googleapis");
 
 const SCOPES = ["https://www.googleapis.com/auth/drive"];
 
-const createAndUpload = async (auth, filename) => {
+const createAndUpload = async (filename) => {
   const KEYFILEPATH = path.resolve(
     process.cwd(),
     "/foodimages-354509-1701f68056c0.json"
@@ -85,7 +85,7 @@ app.post(
     if (!file) {
       return res.status(400).send({ message: "Please upload a file." });
     }
-    let uploadRes = await createAndUpload(auth, file.filename);
+    let uploadRes = await createAndUpload(file.filename);
     if (uploadRes === "") return res.status(500).json({ success: false });
     return res.json({ success: true, id: uploadRes });
   }
