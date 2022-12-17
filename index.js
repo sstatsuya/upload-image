@@ -51,7 +51,7 @@ app.use("/uploads", express.static("uploads"));
 // handle storage using multer
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "./tmp");
+    cb(null, path.resolve(process.cwd(), "/tmp"));
   },
   filename: function (req, file, cb) {
     cb(null, file.fieldname + "-" + Date.now());
