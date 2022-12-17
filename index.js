@@ -9,12 +9,12 @@ const { google } = require("googleapis");
 const SCOPES = ["https://www.googleapis.com/auth/drive"];
 
 const createAndUpload = async (filename) => {
-  const KEYFILEPATH = path.resolve(
-    process.cwd(),
-    "./static/foodimages-354509-1701f68056c0.json"
-  );
+  // const KEYFILEPATH = path.resolve(
+  //   process.cwd(),
+  //   "./static/foodimages-354509-1701f68056c0.json"
+  // );
 
-  // const KEYFILEPATH = "./static/foodimages-354509-1701f68056c0.json";
+  const KEYFILEPATH = "./static/foodimages-354509-1701f68056c0.json";
 
   const auth = new google.auth.GoogleAuth({
     keyFile: KEYFILEPATH,
