@@ -15,15 +15,15 @@ const auth = new google.auth.GoogleAuth({
 });
 
 const createAndUpload = async (auth, filename) => {
+  return "break";
   const driveService = google.drive({ version: "v3", auth });
   let fileMetaData = {
     name: filename + ".png",
     parents: ["15olDSCIpfc4D5o7dJDsoX7WWxFqPV1Hc"],
   };
-  return "break";
   let media = {
     mimeType: "image/png",
-    body: fs.createReadStream("./tmp/" + filename),
+    body: fs.createReadStream(path.join(process.cwd(), "/tmp/" + filename)),
   };
   let response = await driveService.files.create({
     resource: fileMetaData,
