@@ -11,7 +11,7 @@ const SCOPES = ["https://www.googleapis.com/auth/drive"];
 const createAndUpload = async (filename) => {
   const KEYFILEPATH = path.resolve(
     process.cwd(),
-    "/foodimages-354509-1701f68056c0.json"
+    "foodimages-354509-1701f68056c0.json"
   );
 
   const auth = new google.auth.GoogleAuth({
