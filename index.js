@@ -20,18 +20,18 @@ const createAndUpload = async (auth, filename) => {
     name: filename + ".png",
     parents: ["15olDSCIpfc4D5o7dJDsoX7WWxFqPV1Hc"],
   };
-  return "breakpoint";
+  // return "breakpoint";
   let media = {
     mimeType: "image/png",
-    body: fs.createReadStream(path.join(__dirname + "/uploads/" + filename)),
+    body: fs.createReadStream(filename),
   };
-  return "breakpoint";
+  // return "breakpoint";
   let response = await driveService.files.create({
     resource: fileMetaData,
     media: media,
     fields: "id",
   });
-  fs.unlink(path.join(__dirname + "/uploads/" + filename), () => {});
+  fs.unlink(filename, () => {});
   if (response.status < 299 && response.status > 199) {
     // return `https://drive.google.com/file/d/${response.data.id}/view`;
     // return `https://drive.google.com/thumbnail?id=${response.data.id}`;
@@ -53,7 +53,7 @@ app.use("/uploads", express.static("uploads"));
 // handle storage using multer
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, path.join(__dirname + "/uploads"));
+    cb(null, "");
   },
   filename: function (req, file, cb) {
     cb(null, file.fieldname + "-" + Date.now());
