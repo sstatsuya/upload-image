@@ -15,7 +15,6 @@ const auth = new google.auth.GoogleAuth({
 });
 
 const createAndUpload = async (auth, filename) => {
-  return "break";
   const driveService = google.drive({ version: "v3", auth });
   let fileMetaData = {
     name: filename + ".png",
@@ -23,14 +22,14 @@ const createAndUpload = async (auth, filename) => {
   };
   let media = {
     mimeType: "image/png",
-    body: fs.createReadStream(path.join(process.cwd(), "/tmp/" + filename)),
+    body: fs.createReadStream(path.resolve(process.cwd(), "/tmp" + filename)),
   };
   let response = await driveService.files.create({
     resource: fileMetaData,
     media: media,
     fields: "id",
   });
-  fs.unlink("./tmp/" + filename, () => {});
+  fs.unlink(path.resolve(process.cwd(), "/tmp" + filename), () => {});
   if (response.status < 299 && response.status > 199) {
     // return `https://drive.google.com/file/d/${response.data.id}/view`;
     // return `https://drive.google.com/thumbnail?id=${response.data.id}`;
