@@ -14,7 +14,7 @@ const auth = new google.auth.GoogleAuth({
   scopes: SCOPES,
 });
 
-createAndUpload = async (auth, filename) => {
+const createAndUpload = async (auth, filename) => {
   const driveService = google.drive({ version: "v3", auth });
   let fileMetaData = {
     name: filename + ".png",
@@ -24,15 +24,13 @@ createAndUpload = async (auth, filename) => {
     mimeType: "image/png",
     body: fs.createReadStream("./uploads/" + filename),
   };
-
   let response = await driveService.files.create({
     resource: fileMetaData,
     media: media,
     fields: "id",
   });
-
+  fs.unlink("./uploads/" + filename, () => {});
   if (response.status < 299 && response.status > 199) {
-    fs.unlink("./uploads/" + filename, () => {});
     // return `https://drive.google.com/file/d/${response.data.id}/view`;
     // return `https://drive.google.com/thumbnail?id=${response.data.id}`;
     return `https://drive.google.com/uc?id=${response.data.id}`;
@@ -62,20 +60,32 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage });
 
 // handle single file upload
-app.post("/upload-file", upload.single("dataFile"), async (req, res, next) => {
-  // Khi gửi hình cũng phải gửi qua key là "dataFile"
-  const file = req.file;
-  if (!file) {
-    return res.status(400).send({ message: "Please upload a file." });
+app.post(
+  "/food-recipe-upload-file",
+  upload.single("dataFile"),
+  async (req, res, next) => {
+    // Khi gửi hình cũng phải gửi qua key là "dataFile"
+    const file = req.file;
+    if (!file) {
+      return res.status(400).send({ message: "Please upload a file." });
+    }
+    let uploadRes = await createAndUpload(auth, file.filename);
+    if (uploadRes === "") return res.status(500).json({ success: false });
+    return res.json({ success: true, id: uploadRes });
   }
-  let uploadRes = await createAndUpload(auth, file.filename);
-  if (uploadRes === "") return res.status(500).json({ success: false });
-  return res.json({ success: true, id: uploadRes });
-});
+);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3002;
 
 app.listen(PORT, () => {
-  // Cho app lắng nghe địa chỉ localhost (127.0.0.1) trên port 3000
-  console.log(`Example app listening on port ${PORT}`);
+  // Cho app lắng nghe địa chỉ localhost (127.0.0.1) trên port 3002
+  console.log(`Example app listening on port http://localhost:${PORT}`);
+});
+
+app.get("/", (req, res) => {
+  res.sendFile("assets/html/intro/index.html", { root: __dirname });
+});
+
+app.use((req, res) => {
+  res.sendFile("assets/html/error/index.html", { root: __dirname });
 });
