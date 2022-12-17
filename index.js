@@ -52,7 +52,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // handle storage using multer
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, path.join(process.cwd(), "/tmp"));
+    cb(null, path.resolve(process.cwd(), "/tmp"));
     // cb(null, "./tmp");
   },
   filename: function (req, file, cb) {
