@@ -24,6 +24,7 @@ const createAndUpload = async (auth, filename) => {
     mimeType: "image/png",
     body: fs.createReadStream(path.join(__dirname + "/uploads/" + filename)),
   };
+  return "breakpoint";
   let response = await driveService.files.create({
     resource: fileMetaData,
     media: media,
