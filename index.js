@@ -1,29 +1,24 @@
 const express = require("express"); // import thư viện express đã cài ở trên
 const app = express(); // app ở đây đại diện cho cái dự án nodejs mà mình sẽ làm việc xuyên suốt
-const port = 3000; // muốn run app ở port 3000
+const cors = require("cors");
+const bodyParser = require("body-parser");
+const multer = require("multer");
+const path = require("path");
 
 const fs = require("fs");
 const readline = require("readline");
 const { google } = require("googleapis");
 
+const KEYFILEPATH = path.join(
+  __dirname + "/static/foodimages-354509-1701f68056c0.json"
+);
 const SCOPES = ["https://www.googleapis.com/auth/drive"];
+const auth = new google.auth.GoogleAuth({
+  keyFile: KEYFILEPATH,
+  scopes: SCOPES,
+});
 
-const createAndUpload = async (filename) => {
-  // const KEYFILEPATH = path.resolve(
-  //   process.cwd(),
-  //   "./static/foodimages-354509-1701f68056c0.json"
-  // );
-
-  const KEYFILEPATH = path.join(
-    __dirname + "/static/foodimages-354509-1701f68056c0.json"
-  );
-
-  // const KEYFILEPATH = "./static/foodimages-354509-1701f68056c0.json";
-
-  const auth = new google.auth.GoogleAuth({
-    keyFile: KEYFILEPATH,
-    scopes: SCOPES,
-  });
+const createAndUpload = async (auth, filename) => {
   const driveService = google.drive({ version: "v3", auth });
   let fileMetaData = {
     name: filename + ".png",
@@ -31,14 +26,16 @@ const createAndUpload = async (filename) => {
   };
   let media = {
     mimeType: "image/png",
-    body: fs.createReadStream(path.resolve(process.cwd(), "/tmp/" + filename)),
+    body: fs.createReadStream(
+      path.resolve(process.cwd(), "/uploads/" + filename)
+    ),
   };
   let response = await driveService.files.create({
     resource: fileMetaData,
     media: media,
     fields: "id",
   });
-  fs.unlink(path.resolve(process.cwd(), "/tmp/" + filename), () => {});
+  fs.unlink(path.resolve(process.cwd(), "/uploads/" + filename), () => {});
   if (response.status < 299 && response.status > 199) {
     // return `https://drive.google.com/file/d/${response.data.id}/view`;
     // return `https://drive.google.com/thumbnail?id=${response.data.id}`;
@@ -46,11 +43,6 @@ const createAndUpload = async (filename) => {
   }
   return "";
 };
-
-const cors = require("cors");
-const bodyParser = require("body-parser");
-const multer = require("multer");
-const path = require("path");
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -60,8 +52,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // handle storage using multer
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, path.resolve(process.cwd(), "/tmp"));
-    // cb(null, "./tmp");
+    cb(null, path.resolve(process.cwd(), "/uploads"));
   },
   filename: function (req, file, cb) {
     cb(null, file.fieldname + "-" + Date.now());
@@ -91,7 +82,7 @@ app.post(
     if (!file) {
       return res.status(400).send({ message: "Please upload a file." });
     }
-    let uploadRes = await createAndUpload(file.filename);
+    let uploadRes = await createAndUpload(auth, file.filename);
     if (uploadRes === "") return res.status(500).json({ success: false });
     return res.json({ success: true, id: uploadRes });
   }
