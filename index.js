@@ -71,10 +71,6 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname + "/assets/html/intro/index.html"));
 });
 
-app.use((req, res) => {
-  res.sendFile(path.join(__dirname + "/assets/html/error/index.html"));
-});
-
 // handle single file upload
 app.post(
   "/food-recipe-upload-file",
@@ -90,3 +86,7 @@ app.post(
     return res.json({ success: true, id: uploadRes });
   }
 );
+
+app.use((req, res) => {
+  res.sendFile(path.join(__dirname + "/assets/html/error/index.html"));
+});
