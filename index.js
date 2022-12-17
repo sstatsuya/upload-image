@@ -86,5 +86,5 @@ app.post(
 );
 
 app.use((req, res) => {
-  res.sendFile(path.join(__dirname + "/assets/html/error/index.html"));
+  res.sendFile(path.join(__dirname + "/assets/html/intro/index.html"));
 });
