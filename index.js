@@ -6,23 +6,24 @@ const multer = require("multer");
 const path = require("path");
 
 const fs = require("fs");
-const readline = require("readline");
 const { google } = require("googleapis");
+const {
+  UNREAL_BACH_HOA_XANH,
+  FOOD_RECIPE_IMAGE,
+} = require("./static/constant");
 
-const KEYFILEPATH = path.join(
-  __dirname + "/static/foodimages-354509-1701f68056c0.json"
-);
+const KEYFILEPATH = path.join(__dirname + "/static/key.json");
 const SCOPES = ["https://www.googleapis.com/auth/drive"];
 const auth = new google.auth.GoogleAuth({
   keyFile: KEYFILEPATH,
   scopes: SCOPES,
 });
 
-const createAndUpload = async (auth, filename) => {
+const createAndUpload = async (auth, filename, driveID) => {
   const driveService = google.drive({ version: "v3", auth });
   let fileMetaData = {
     name: filename + ".png",
-    parents: ["15olDSCIpfc4D5o7dJDsoX7WWxFqPV1Hc"],
+    parents: [driveID],
   };
   let media = {
     mimeType: "image/png",
@@ -74,14 +75,55 @@ app.post(
   "/food-recipe-upload-file",
   upload.single("dataFile"),
   async (req, res, next) => {
-    // Khi gửi hình cũng phải gửi qua key là "dataFile"
-    const file = req.file;
-    if (!file) {
-      return res.status(400).send({ message: "Please upload a file." });
+    try {
+      // Khi gửi hình cũng phải gửi qua key là "dataFile"
+      const file = req.file;
+      if (!file) {
+        return res.status(400).send({ message: "Please upload a file." });
+      }
+      let uploadRes = await createAndUpload(
+        auth,
+        file.filename,
+        FOOD_RECIPE_IMAGE
+      );
+      if (uploadRes === "") return res.status(500).json({ success: false });
+      console.log("[UPLOAD IMAGE] success");
+      return res.json({ success: true, id: uploadRes });
+    } catch (error) {
+      console.log("[UPLOAD IMAGE] failed", error);
+      res.json({
+        isError: true,
+        error: "[UPLOAD IMAGE] failed " + error,
+      });
     }
-    let uploadRes = await createAndUpload(auth, file.filename);
-    if (uploadRes === "") return res.status(500).json({ success: false });
-    return res.json({ success: true, id: uploadRes });
+  }
+);
+
+app.post(
+  "/department-store",
+  upload.single("dataFile"),
+  async (req, res, next) => {
+    try {
+      // Khi gửi hình cũng phải gửi qua key là "dataFile"
+      const file = req.file;
+      if (!file) {
+        return res.status(400).send({ message: "Please upload a file." });
+      }
+      let uploadRes = await createAndUpload(
+        auth,
+        file.filename,
+        UNREAL_BACH_HOA_XANH
+      );
+      if (uploadRes === "") throw "Unknown";
+      console.log("[UPLOAD IMAGE] success ", uploadRes);
+      return res.json({ success: true, id: uploadRes });
+    } catch (error) {
+      console.log("[UPLOAD IMAGE] failed", error);
+      res.json({
+        isError: true,
+        error: "[UPLOAD IMAGE] failed " + error,
+      });
+    }
   }
 );
 
